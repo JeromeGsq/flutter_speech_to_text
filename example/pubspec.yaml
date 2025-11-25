@@ -1,0 +1,20 @@
+name: speech_to_text_example
+description: Demonstrates how to use the speech_to_text_native plugin.
+publish_to: 'none'
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  speech_to_text_native:
+    path: ../
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true

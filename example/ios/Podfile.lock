@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - speech_to_text_native (1.0.0):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - speech_to_text_native (from `.symlinks/plugins/speech_to_text_native/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  speech_to_text_native:
+    :path: ".symlinks/plugins/speech_to_text_native/ios"
+
+SPEC CHECKSUMS:
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  speech_to_text_native: eaaf6fdf1d2721c7bd1dcaa8303d5417e7df4221
+
+PODFILE CHECKSUM: 0aa5c2af9f016a23c3c5f53239b9478c96eff4e2
+
+COCOAPODS: 1.16.2
