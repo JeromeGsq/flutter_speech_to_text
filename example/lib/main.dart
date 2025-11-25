@@ -95,7 +95,8 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
   Future<void> _initSpeechToText() async {
     // Set up listeners
     _resultSubscription = _speechToText.onResult.listen((result) {
-      debugPrint('🎤 Result: ${result.transcript} (final: ${result.isFinal}, confidence: ${result.confidence})');
+      debugPrint(
+          '🎤 Result: ${result.transcript} (final: ${result.isFinal}, confidence: ${result.confidence})');
       setState(() {
         _transcript = result.transcript;
         _confidence = result.confidence;
@@ -140,7 +141,8 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
   }
 
   Future<void> _startListening() async {
-    debugPrint('▶️ Starting listening with language: ${_selectedLanguage ?? "device default"}');
+    debugPrint(
+        '▶️ Starting listening with language: ${_selectedLanguage ?? "device default"}');
     setState(() {
       _errorMessage = null;
       _transcript = '';
@@ -184,6 +186,12 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
     }
   }
 
+  void _onLanguageSelected(String? code) {
+    setState(() {
+      _selectedLanguage = code;
+    });
+  }
+
   @override
   void dispose() {
     _resultSubscription?.cancel();
@@ -208,9 +216,26 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
         child: SafeArea(
           child: Column(
             children: [
-              _buildHeader(),
-              Expanded(child: _buildContent()),
-              _buildMicButton(),
+              _Header(
+                selectedLanguage: _selectedLanguage,
+                languages: _languages,
+                onLanguageSelected: _onLanguageSelected,
+              ),
+              Expanded(
+                child: _Content(
+                  isAvailable: _isAvailable,
+                  isListening: _isListening,
+                  confidence: _confidence,
+                  transcript: _transcript,
+                  errorMessage: _errorMessage,
+                ),
+              ),
+              _MicButton(
+                isListening: _isListening,
+                isAvailable: _isAvailable,
+                pulseAnimation: _pulseAnimation,
+                onTap: _toggleListening,
+              ),
               const SizedBox(height: 40),
             ],
           ),
@@ -218,8 +243,21 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
       ),
     );
   }
+}
 
-  Widget _buildHeader() {
+class _Header extends StatelessWidget {
+  const _Header({
+    required this.selectedLanguage,
+    required this.languages,
+    required this.onLanguageSelected,
+  });
+
+  final String? selectedLanguage;
+  final List<Map<String, String?>> languages;
+  final ValueChanged<String?> onLanguageSelected;
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Row(
@@ -256,14 +294,31 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
               ],
             ),
           ),
-          _buildLanguageSelector(),
+          _LanguageSelector(
+            selectedLanguage: selectedLanguage,
+            languages: languages,
+            onSelected: onLanguageSelected,
+          ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildLanguageSelector() {
-    final displayLanguage = _selectedLanguage ?? 'Auto';
+class _LanguageSelector extends StatelessWidget {
+  const _LanguageSelector({
+    required this.selectedLanguage,
+    required this.languages,
+    required this.onSelected,
+  });
+
+  final String? selectedLanguage;
+  final List<Map<String, String?>> languages;
+  final ValueChanged<String?> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final displayLanguage = selectedLanguage ?? 'Auto';
     return PopupMenuButton<String?>(
       icon: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -284,31 +339,70 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
           ],
         ),
       ),
-      onSelected: (String? code) {
-        setState(() {
-          _selectedLanguage = code;
-        });
-      },
-      itemBuilder: (context) => _languages.map((lang) {
-        return PopupMenuItem<String?>(value: lang['code'], child: Text(lang['name']!));
+      onSelected: onSelected,
+      itemBuilder: (context) => languages.map((lang) {
+        return PopupMenuItem<String?>(
+          value: lang['code'],
+          child: Text(lang['name']!),
+        );
       }).toList(),
     );
   }
+}
 
-  Widget _buildContent() {
+class _Content extends StatelessWidget {
+  const _Content({
+    required this.isAvailable,
+    required this.isListening,
+    required this.confidence,
+    required this.transcript,
+    required this.errorMessage,
+  });
+
+  final bool isAvailable;
+  final bool isListening;
+  final double confidence;
+  final String transcript;
+  final String? errorMessage;
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         children: [
-          _buildStatusCard(),
+          _StatusCard(
+            isAvailable: isAvailable,
+            isListening: isListening,
+            confidence: confidence,
+          ),
           const SizedBox(height: 24),
-          Expanded(child: _buildTranscriptCard()),
+          Expanded(
+            child: _TranscriptCard(
+              transcript: transcript,
+              errorMessage: errorMessage,
+              isListening: isListening,
+            ),
+          ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildStatusCard() {
+class _StatusCard extends StatelessWidget {
+  const _StatusCard({
+    required this.isAvailable,
+    required this.isListening,
+    required this.confidence,
+  });
+
+  final bool isAvailable;
+  final bool isListening;
+  final double confidence;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -318,41 +412,51 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
       ),
       child: Row(
         children: [
-          _buildStatusItem(
-            icon: _isAvailable ? Icons.check_circle : Icons.cancel,
+          _StatusItem(
+            icon: isAvailable ? Icons.check_circle : Icons.cancel,
             label: 'Available',
-            value: _isAvailable ? 'Yes' : 'No',
-            color: _isAvailable ? Colors.green : Colors.red,
+            value: isAvailable ? 'Yes' : 'No',
+            color: isAvailable ? Colors.green : Colors.red,
           ),
           const SizedBox(width: 16),
           Container(width: 1, height: 40, color: Colors.white12),
           const SizedBox(width: 16),
-          _buildStatusItem(
-            icon: _isListening ? Icons.hearing : Icons.hearing_disabled,
+          _StatusItem(
+            icon: isListening ? Icons.hearing : Icons.hearing_disabled,
             label: 'Status',
-            value: _isListening ? 'Listening' : 'Idle',
-            color: _isListening ? const Color(0xFF6366F1) : Colors.white54,
+            value: isListening ? 'Listening' : 'Idle',
+            color: isListening ? const Color(0xFF6366F1) : Colors.white54,
           ),
           const SizedBox(width: 16),
           Container(width: 1, height: 40, color: Colors.white12),
           const SizedBox(width: 16),
-          _buildStatusItem(
+          _StatusItem(
             icon: Icons.speed,
             label: 'Confidence',
-            value: '${(_confidence * 100).toStringAsFixed(0)}%',
+            value: '${(confidence * 100).toStringAsFixed(0)}%',
             color: Colors.amber,
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildStatusItem({
-    required IconData icon,
-    required String label,
-    required String value,
-    required Color color,
-  }) {
+class _StatusItem extends StatelessWidget {
+  const _StatusItem({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
     return Expanded(
       child: Column(
         children: [
@@ -374,8 +478,21 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
       ),
     );
   }
+}
 
-  Widget _buildTranscriptCard() {
+class _TranscriptCard extends StatelessWidget {
+  const _TranscriptCard({
+    required this.transcript,
+    required this.errorMessage,
+    required this.isListening,
+  });
+
+  final String transcript;
+  final String? errorMessage;
+  final bool isListening;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -387,11 +504,11 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
-              const Icon(Icons.text_fields, color: Colors.white54, size: 20),
-              const SizedBox(width: 8),
-              const Text(
+              Icon(Icons.text_fields, color: Colors.white54, size: 20),
+              SizedBox(width: 8),
+              Text(
                 'Transcript',
                 style: TextStyle(
                   fontSize: 14,
@@ -399,36 +516,50 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
                   color: Colors.white54,
                 ),
               ),
-              const Spacer(),
+              Spacer(),
             ],
           ),
           const SizedBox(height: 16),
           Expanded(
             child: SingleChildScrollView(
-              child: _errorMessage != null
-                  ? _buildErrorMessage()
-                  : _buildTranscriptText(),
+              child: errorMessage != null
+                  ? _ErrorMessage(message: errorMessage!)
+                  : _TranscriptText(
+                      transcript: transcript,
+                      isListening: isListening,
+                    ),
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildTranscriptText() {
-    if (_transcript.isEmpty) {
+class _TranscriptText extends StatelessWidget {
+  const _TranscriptText({
+    required this.transcript,
+    required this.isListening,
+  });
+
+  final String transcript;
+  final bool isListening;
+
+  @override
+  Widget build(BuildContext context) {
+    if (transcript.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              _isListening ? Icons.graphic_eq : Icons.mic_none,
+              isListening ? Icons.graphic_eq : Icons.mic_none,
               size: 48,
               color: Colors.white24,
             ),
             const SizedBox(height: 16),
             Text(
-              _isListening
+              isListening
                   ? 'Listening...\nSpeak now'
                   : 'Tap the microphone\nto start',
               textAlign: TextAlign.center,
@@ -440,12 +571,19 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
     }
 
     return Text(
-      _transcript,
+      transcript,
       style: const TextStyle(fontSize: 20, color: Colors.white, height: 1.6),
     );
   }
+}
 
-  Widget _buildErrorMessage() {
+class _ErrorMessage extends StatelessWidget {
+  const _ErrorMessage({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -453,7 +591,7 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
           const Icon(Icons.error_outline, size: 48, color: Colors.redAccent),
           const SizedBox(height: 16),
           Text(
-            _errorMessage!,
+            message,
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 16, color: Colors.redAccent),
           ),
@@ -461,15 +599,30 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
       ),
     );
   }
+}
 
-  Widget _buildMicButton() {
+class _MicButton extends StatelessWidget {
+  const _MicButton({
+    required this.isListening,
+    required this.isAvailable,
+    required this.pulseAnimation,
+    required this.onTap,
+  });
+
+  final bool isListening;
+  final bool isAvailable;
+  final Animation<double> pulseAnimation;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: _pulseAnimation,
+      animation: pulseAnimation,
       builder: (context, child) {
         return Transform.scale(
-          scale: _isListening ? _pulseAnimation.value : 1.0,
+          scale: isListening ? pulseAnimation.value : 1.0,
           child: GestureDetector(
-            onTap: _isAvailable ? _toggleListening : null,
+            onTap: isAvailable ? onTap : null,
             child: Container(
               width: 80,
               height: 80,
@@ -478,26 +631,25 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: _isListening
+                  colors: isListening
                       ? [const Color(0xFFEF4444), const Color(0xFFDC2626)]
-                      : _isAvailable
-                      ? [const Color(0xFF6366F1), const Color(0xFF4F46E5)]
-                      : [Colors.grey.shade600, Colors.grey.shade700],
+                      : isAvailable
+                          ? [const Color(0xFF6366F1), const Color(0xFF4F46E5)]
+                          : [Colors.grey.shade600, Colors.grey.shade700],
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color:
-                        (_isListening
-                                ? const Color(0xFFEF4444)
-                                : const Color(0xFF6366F1))
-                            .withOpacity(0.4),
+                    color: (isListening
+                            ? const Color(0xFFEF4444)
+                            : const Color(0xFF6366F1))
+                        .withOpacity(0.4),
                     blurRadius: 20,
-                    spreadRadius: _isListening ? 5 : 0,
+                    spreadRadius: isListening ? 5 : 0,
                   ),
                 ],
               ),
               child: Icon(
-                _isListening ? Icons.stop_rounded : Icons.mic_rounded,
+                isListening ? Icons.stop_rounded : Icons.mic_rounded,
                 color: Colors.white,
                 size: 36,
               ),
