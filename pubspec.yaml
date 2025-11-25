@@ -27,3 +27,5 @@ flutter:
         pluginClass: SpeechToTextPlugin
       ios:
         pluginClass: SpeechToTextPlugin
+      macos:
+        pluginClass: SpeechToTextPlugin

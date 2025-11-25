@@ -400,13 +400,6 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
                 ),
               ),
               const Spacer(),
-              if (_transcript.isNotEmpty)
-                IconButton(
-                  icon: const Icon(Icons.copy, color: Colors.white54, size: 20),
-                  onPressed: () {
-                    // Copy to clipboard
-                  },
-                ),
             ],
           ),
           const SizedBox(height: 16),
