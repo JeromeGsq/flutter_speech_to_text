@@ -51,8 +51,9 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
   StreamSubscription<SpeechError>? _errorSubscription;
   StreamSubscription<void>? _endSubscription;
 
-  String _selectedLanguage = 'en-US';
-  final List<Map<String, String>> _languages = [
+  String? _selectedLanguage; // null = use device language
+  final List<Map<String, String?>> _languages = [
+    {'code': null, 'name': 'Auto (Device)'},
     {'code': 'en-US', 'name': 'English (US)'},
     {'code': 'en-GB', 'name': 'English (UK)'},
     {'code': 'fr-FR', 'name': 'Français'},
@@ -139,7 +140,7 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
   }
 
   Future<void> _startListening() async {
-    debugPrint('▶️ Starting listening with language: $_selectedLanguage');
+    debugPrint('▶️ Starting listening with language: ${_selectedLanguage ?? "device default"}');
     setState(() {
       _errorMessage = null;
       _transcript = '';
@@ -262,7 +263,8 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
   }
 
   Widget _buildLanguageSelector() {
-    return PopupMenuButton<String>(
+    final displayLanguage = _selectedLanguage ?? 'Auto';
+    return PopupMenuButton<String?>(
       icon: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
@@ -274,7 +276,7 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              _selectedLanguage,
+              displayLanguage,
               style: const TextStyle(color: Colors.white, fontSize: 14),
             ),
             const SizedBox(width: 4),
@@ -282,13 +284,13 @@ class _SpeechToTextDemoState extends State<SpeechToTextDemo>
           ],
         ),
       ),
-      onSelected: (String code) {
+      onSelected: (String? code) {
         setState(() {
           _selectedLanguage = code;
         });
       },
       itemBuilder: (context) => _languages.map((lang) {
-        return PopupMenuItem(value: lang['code'], child: Text(lang['name']!));
+        return PopupMenuItem<String?>(value: lang['code'], child: Text(lang['name']!));
       }).toList(),
     );
   }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -132,7 +133,8 @@ class SpeechToText {
 
   /// Starts speech recognition with the specified language.
   ///
-  /// [language] is a locale identifier (e.g., 'en-US', 'fr-FR', 'es-ES').
+  /// [language] is an optional locale identifier (e.g., 'en-US', 'fr-FR', 'es-ES').
+  /// If not provided, defaults to the device's locale with English ('en-US') as fallback.
   ///
   /// Throws a [SpeechError] if:
   /// - Permissions are not granted ([SpeechErrorCode.permissionDenied])
@@ -141,21 +143,64 @@ class SpeechToText {
   ///
   /// Example:
   /// ```dart
-  /// try {
-  ///   await speechToText.start(language: 'en-US');
-  /// } on SpeechError catch (e) {
-  ///   print('Failed to start: ${e.message}');
-  /// }
+  /// // Use device language
+  /// await speechToText.start();
+  ///
+  /// // Or specify a language
+  /// await speechToText.start(language: 'fr-FR');
   /// ```
-  Future<void> start({required String language}) async {
+  Future<void> start({String? language}) async {
+    final effectiveLanguage = language ?? _getDeviceLanguage();
+    debugPrint('[SpeechToText] Starting with language: $effectiveLanguage');
     try {
-      await _channel.invokeMethod('start', {'language': language});
+      await _channel.invokeMethod('start', {'language': effectiveLanguage});
     } on PlatformException catch (e) {
       throw SpeechError(
         errorCode: SpeechErrorCode.fromString(e.code),
         message: e.message ?? 'Unknown error',
       );
     }
+  }
+
+  /// Gets the device's current language locale.
+  /// Falls back to 'en-US' if the locale cannot be determined.
+  String _getDeviceLanguage() {
+    try {
+      final locale = PlatformDispatcher.instance.locale;
+      // Format as language-country (e.g., 'en-US', 'fr-FR')
+      if (locale.countryCode != null && locale.countryCode!.isNotEmpty) {
+        return '${locale.languageCode}-${locale.countryCode}';
+      }
+      // If no country code, try common mappings
+      return _getDefaultLocaleForLanguage(locale.languageCode);
+    } catch (e) {
+      debugPrint('[SpeechToText] Error getting device language: $e');
+      return 'en-US';
+    }
+  }
+
+  /// Returns a default locale for a given language code.
+  String _getDefaultLocaleForLanguage(String languageCode) {
+    const defaults = {
+      'en': 'en-US',
+      'fr': 'fr-FR',
+      'es': 'es-ES',
+      'de': 'de-DE',
+      'it': 'it-IT',
+      'pt': 'pt-BR',
+      'zh': 'zh-CN',
+      'ja': 'ja-JP',
+      'ko': 'ko-KR',
+      'ar': 'ar-SA',
+      'ru': 'ru-RU',
+      'nl': 'nl-NL',
+      'pl': 'pl-PL',
+      'tr': 'tr-TR',
+      'vi': 'vi-VN',
+      'th': 'th-TH',
+      'hi': 'hi-IN',
+    };
+    return defaults[languageCode] ?? 'en-US';
   }
 
   /// Stops speech recognition.

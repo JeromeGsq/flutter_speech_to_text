@@ -182,35 +182,68 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     private func stop(result: @escaping FlutterResult) {
         isManuallyStopped = true
         
-        if !lastTranscript.isEmpty {
-            sendEvent(type: "onSpeechResult", data: [
-                "transcript": lastTranscript,
-                "isFinal": true,
-                "confidence": lastConfidence
-            ])
+        // Stop audio engine first
+        audioEngine.stop()
+        audioEngine.inputNode.removeTap(onBus: 0)
+        
+        // End audio input - this signals no more audio is coming
+        recognitionRequest?.endAudio()
+        
+        // Use finish() instead of cancel() to get the final result with confidence
+        recognitionTask?.finish()
+        
+        // The recognition callback will receive the final result
+        // We wait a short moment for the final result to come through
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            guard let self = self else { return }
+            
+            // If we still have a transcript but didn't get a final result, send it
+            if !self.lastTranscript.isEmpty {
+                self.sendEvent(type: "onSpeechResult", data: [
+                    "transcript": self.lastTranscript,
+                    "isFinal": true,
+                    "confidence": self.lastConfidence
+                ])
+            }
+            
+            self.sendEvent(type: "onSpeechEnd", data: [:])
+            self.cleanupRecognition()
         }
         
-        stopRecognition()
-        sendEvent(type: "onSpeechEnd", data: [:])
         result(nil)
     }
     
     // MARK: - Private Methods
     
-    private func stopRecognition() {
-        audioEngine.stop()
-        audioEngine.inputNode.removeTap(onBus: 0)
-        recognitionRequest?.endAudio()
-        recognitionTask?.cancel()
+    private func cleanupRecognition() {
         recognitionRequest = nil
         recognitionTask = nil
     }
     
+    private func stopRecognition() {
+        audioEngine.stop()
+        audioEngine.inputNode.removeTap(onBus: 0)
+        recognitionRequest?.endAudio()
+        recognitionTask?.finish()
+        cleanupRecognition()
+    }
+    
     private func getConfidence(from result: SFSpeechRecognitionResult) -> Double {
-        guard let segment = result.bestTranscription.segments.last else {
+        let segments = result.bestTranscription.segments
+        guard !segments.isEmpty else {
             return 0.0
         }
-        return Double(segment.confidence)
+        
+        // Calculate average confidence across all segments with non-zero confidence
+        let confidences = segments.map { Double($0.confidence) }.filter { $0 > 0 }
+        
+        if confidences.isEmpty {
+            // For partial results, confidence is often 0.0
+            // Return 0.0 to indicate confidence not yet available
+            return 0.0
+        }
+        
+        return confidences.reduce(0, +) / Double(confidences.count)
     }
     
     private func mapErrorCode(from error: Error) -> String {
