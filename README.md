@@ -3,7 +3,9 @@
 [![pub package](https://img.shields.io/pub/v/speech_to_text_native.svg)](https://pub.dev/packages/speech_to_text_native)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/adelbeke/flutter-speech-to-text/blob/main/LICENSE)
 
-A powerful, easy-to-use Flutter plugin for real-time speech-to-text conversion. Built with native iOS Speech Framework and Android SpeechRecognizer for optimal performance.
+Speech to text native plugin for Flutter.
+
+This Flutter package was vibe coded from [react-native-speech-to-text](https://github.com/adelbeke/react-native-speech-to-text) by [Arthur Delbeke](https://github.com/adelbeke). Thanks to his excellent work on the React Native version, this Flutter implementation was made possible!
 
 ## ✨ Features
 
@@ -346,15 +348,11 @@ Availability depends on the device and platform. Use `isAvailable()` to check.
 
 ## 📄 License
 
-MIT © Arthur Delbeke
+MIT
 
 ## 🔗 Links
 
 - [GitHub Repository](https://github.com/adelbeke/flutter-speech-to-text)
 - [pub.dev Package](https://pub.dev/packages/speech_to_text_native)
 - [Report Issues](https://github.com/adelbeke/flutter-speech-to-text/issues)
-
----
-
-Made with ❤️ for the Flutter community
-
+- [Original React Native Package](https://github.com/adelbeke/react-native-speech-to-text)
