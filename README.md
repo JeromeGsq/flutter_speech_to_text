@@ -17,6 +17,13 @@ This Flutter package was vibe coded from [react-native-speech-to-text](https://g
 - 🔒 **Built-in permission handling**
 - 📝 **Full Dart/Flutter types** included
 
+## 📸 Screenshots
+
+<div align="center">
+  <img src="documentation/screen1.png" alt="Speech to Text App Interface" width="300"/>
+  <img src="documentation/screen2.png" alt="Permission Dialog" width="300"/>
+</div>
+
 ## 📦 Installation
 
 Add this to your package's `pubspec.yaml` file:
