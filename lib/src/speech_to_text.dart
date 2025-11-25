@@ -272,6 +272,35 @@ class SpeechToText {
     }
   }
 
+  /// Opens the system settings for speech recognition permissions.
+  ///
+  /// On macOS, this opens System Settings > Privacy & Security > Speech Recognition.
+  /// On iOS, this opens Settings > Privacy > Speech Recognition.
+  /// On Android, this opens the app's settings page.
+  ///
+  /// This is useful when permissions have been denied and the user needs to
+  /// manually grant them, or on macOS where requesting permissions programmatically
+  /// can cause crashes in debug mode.
+  ///
+  /// Returns `true` if settings were opened successfully, `false` otherwise.
+  ///
+  /// Example:
+  /// ```dart
+  /// final hasPermission = await speechToText.requestPermissions();
+  /// if (!hasPermission) {
+  ///   // Ask user to grant permissions manually
+  ///   await speechToText.openSettings();
+  /// }
+  /// ```
+  Future<bool> openSettings() async {
+    try {
+      final result = await _channel.invokeMethod<bool>('openSettings');
+      return result ?? false;
+    } on PlatformException {
+      return false;
+    }
+  }
+
   /// Disposes of the speech-to-text resources.
   ///
   /// Call this when you no longer need speech recognition to free up resources.

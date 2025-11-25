@@ -62,6 +62,9 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
         case "isAvailable":
             isAvailable(result: result)
             
+        case "openSettings":
+            openSettings(result: result)
+            
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -93,6 +96,21 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
         let recognizerAvailable = SFSpeechRecognizer(locale: Locale(identifier: "en-US")) != nil
         let available = (authStatus == .authorized || authStatus == .notDetermined) && recognizerAvailable
         result(available)
+    }
+    
+    private func openSettings(result: @escaping FlutterResult) {
+        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+            result(false)
+            return
+        }
+        
+        if UIApplication.shared.canOpenURL(settingsUrl) {
+            UIApplication.shared.open(settingsUrl) { success in
+                result(success)
+            }
+        } else {
+            result(false)
+        }
     }
     
     private func start(language: String, result: @escaping FlutterResult) {

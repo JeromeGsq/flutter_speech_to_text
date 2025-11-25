@@ -62,6 +62,9 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
         case "isAvailable":
             isAvailable(result: result)
             
+        case "openSettings":
+            openSettings(result: result)
+            
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -70,34 +73,70 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     // MARK: - Public Methods
     
     private func requestPermissions(result: @escaping FlutterResult) {
-        SFSpeechRecognizer.requestAuthorization { authStatus in
-            DispatchQueue.main.async {
-                switch authStatus {
+        // On macOS, we avoid calling SFSpeechRecognizer.requestAuthorization() directly
+        // because it causes a crash when running from flutter run / VS Code due to a Flutter bug.
+        // See: https://github.com/flutter/flutter/issues/70374
+        //
+        // Instead, we check the current permission status.
+        // If permissions are not yet granted, users need to:
+        // 1. Grant permissions manually in System Settings > Privacy & Security > Speech Recognition
+        // 2. Grant microphone access in System Settings > Privacy & Security > Microphone
+        // 3. Or run the app once from Finder (not flutter run) to trigger the permission dialog
+        
+        let speechStatus = SFSpeechRecognizer.authorizationStatus()
+        
+        switch speechStatus {
+        case .authorized:
+            // Speech is authorized, check microphone
+            if #available(macOS 10.14, *) {
+                let micStatus = AVCaptureDevice.authorizationStatus(for: .audio)
+                switch micStatus {
                 case .authorized:
-                    // On macOS, we need to check microphone permission separately
-                    if #available(macOS 10.14, *) {
-                        switch AVCaptureDevice.authorizationStatus(for: .audio) {
-                        case .authorized:
-                            result(true)
-                        case .notDetermined:
-                            AVCaptureDevice.requestAccess(for: .audio) { granted in
-                                DispatchQueue.main.async {
-                                    result(granted)
-                                }
-                            }
-                        case .denied, .restricted:
-                            result(false)
-                        @unknown default:
-                            result(false)
+                    result(true)
+                case .notDetermined:
+                    // Request microphone access (this usually works without crashing)
+                    AVCaptureDevice.requestAccess(for: .audio) { granted in
+                        DispatchQueue.main.async {
+                            result(granted)
                         }
-                    } else {
-                        result(true)
                     }
-                case .denied, .restricted, .notDetermined:
+                case .denied, .restricted:
                     result(false)
                 @unknown default:
                     result(false)
                 }
+            } else {
+                result(true)
+            }
+            
+        case .notDetermined:
+            // Permissions not yet requested - return false to indicate user needs to grant manually
+            // Calling requestAuthorization() here would crash in flutter run debug mode
+            print("⚠️ [SpeechToText] Speech recognition permission not yet granted.")
+            print("⚠️ [SpeechToText] Please grant permission in System Settings > Privacy & Security > Speech Recognition")
+            print("⚠️ [SpeechToText] Or run the app from Finder (build/macos/Build/Products/Debug/*.app) to trigger the permission dialog")
+            result(false)
+            
+        case .denied, .restricted:
+            result(false)
+            
+        @unknown default:
+            result(false)
+        }
+    }
+    
+    private func openSettings(result: @escaping FlutterResult) {
+        // Open System Settings > Privacy & Security > Speech Recognition
+        if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_SpeechRecognition") {
+            NSWorkspace.shared.open(url)
+            result(true)
+        } else {
+            // Fallback to opening Privacy & Security pane
+            if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy") {
+                NSWorkspace.shared.open(url)
+                result(true)
+            } else {
+                result(false)
             }
         }
     }
