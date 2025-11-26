@@ -1,7 +1,7 @@
 # speech_to_text_native
 
 [![pub package](https://img.shields.io/pub/v/speech_to_text_native.svg)](https://pub.dev/packages/speech_to_text_native)
-[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/adelbeke/flutter-speech-to-text/blob/main/LICENSE)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/JeromeGsq/flutter_speech_to_text/blob/main/LICENSE)
 
 Speech to text native plugin for Flutter.
 
@@ -185,9 +185,11 @@ await speechToText.start(language: 'en-US');
 ```
 
 **Parameters:**
+
 - `language` (String?, optional): Language code (e.g., "en-US", "fr-FR", "es-ES"). If not provided, defaults to the device's locale.
 
 **Throws:**
+
 - `SpeechError` with appropriate error code
 
 ---
@@ -245,12 +247,14 @@ if (!hasPermission) {
 ```
 
 This is useful when:
+
 - Permissions have been denied and need to be granted manually
 - On macOS where requesting permissions programmatically can be problematic
 
 **Returns:** `Future<bool>` - `true` if settings were opened successfully
 
 **Platform behavior:**
+
 - **iOS**: Opens Settings > Privacy > Speech Recognition
 - **macOS**: Opens System Settings > Privacy & Security > Speech Recognition
 - **Android**: Opens the app's settings page
@@ -372,10 +376,12 @@ Availability depends on the device and platform. Use `isAvailable()` to check.
 ### "Permission denied" error
 
 **iOS:**
+
 - Make sure you've added `NSSpeechRecognitionUsageDescription` and `NSMicrophoneUsageDescription` to your `Info.plist`
 - Check that the user granted permissions in Settings > Your App
 
 **Android:**
+
 - Ensure `RECORD_AUDIO` permission is in `AndroidManifest.xml`
 - Call `requestPermissions()` before `start()`
 
@@ -409,7 +415,7 @@ MIT
 
 ## 🔗 Links
 
-- [GitHub Repository](https://github.com/adelbeke/flutter-speech-to-text)
+- [GitHub Repository](https://github.com/JeromeGsq/flutter_speech_to_text)
 - [pub.dev Package](https://pub.dev/packages/speech_to_text_native)
-- [Report Issues](https://github.com/adelbeke/flutter-speech-to-text/issues)
+- [Report Issues](https://github.com/JeromeGsq/flutter_speech_to_text/issues)
 - [Original React Native Package](https://github.com/adelbeke/react-native-speech-to-text)

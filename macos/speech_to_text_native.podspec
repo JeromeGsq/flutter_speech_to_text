@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 A powerful, easy-to-use Flutter plugin for real-time speech-to-text conversion using native macOS Speech Framework.
                        DESC
-  s.homepage         = 'https://github.com/adelbeke/flutter-speech-to-text'
+  s.homepage         = 'https://github.com/JeromeGsq/flutter_speech_to_text'
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Arthur Delbeke' => 'arthur.delbeke.pro@gmail.com' }
   s.source           = { :path => '.' }
