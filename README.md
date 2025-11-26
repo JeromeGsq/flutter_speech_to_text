@@ -10,7 +10,7 @@ This Flutter package was vibe coded from [react-native-speech-to-text](https://g
 ## ✨ Features
 
 - 🎤 **Real-time transcription** with partial results as you speak
-- 📱 **Cross-platform** support for iOS and Android
+- 📱 **Cross-platform** support for iOS, Android, and macOS
 - 🎯 **Confidence scores** for transcription accuracy
 - 🌍 **Multi-language** support
 - ⚡ **Stream-based** architecture for reactive programming
@@ -55,6 +55,26 @@ Add the following permission to your `AndroidManifest.xml`:
 ```
 
 The package handles runtime permission requests automatically.
+
+### macOS Setup
+
+Add the following to your `macos/Runner/DebugProfile.entitlements` and `macos/Runner/Release.entitlements`:
+
+```xml
+<key>com.apple.security.device.audio-input</key>
+<true/>
+```
+
+Add the following to your `macos/Runner/Info.plist`:
+
+```xml
+<key>NSSpeechRecognitionUsageDescription</key>
+<string>This app needs speech recognition to convert your voice to text</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>This app needs microphone access to record your voice</string>
+```
+
+> **Note:** On macOS, you may need to manually grant permissions in System Settings > Privacy & Security > Speech Recognition and Microphone. Use the `openSettings()` method to direct users there.
 
 ## 🚀 Quick Start
 
@@ -112,7 +132,7 @@ class _MyAppState extends State<MyApp> {
       return;
     }
 
-    await _speechToText.start(language: 'en-US');
+    await _speechToText.start(); // Uses device language, or specify: language: 'en-US'
     setState(() => _isListening = true);
   }
 
@@ -152,16 +172,20 @@ class _MyAppState extends State<MyApp> {
 
 #### Methods
 
-##### `start({required String language})`
+##### `start({String? language})`
 
 Starts speech recognition.
 
 ```dart
+// Use device language (auto-detected)
+await speechToText.start();
+
+// Or specify a language explicitly
 await speechToText.start(language: 'en-US');
 ```
 
 **Parameters:**
-- `language` (String, required): Language code (e.g., "en-US", "fr-FR", "es-ES")
+- `language` (String?, optional): Language code (e.g., "en-US", "fr-FR", "es-ES"). If not provided, defaults to the device's locale.
 
 **Throws:**
 - `SpeechError` with appropriate error code
@@ -205,6 +229,31 @@ final available = await speechToText.isAvailable();
 ```
 
 **Returns:** `Future<bool>`
+
+---
+
+##### `openSettings()`
+
+Opens the system settings for speech recognition permissions.
+
+```dart
+final hasPermission = await speechToText.requestPermissions();
+if (!hasPermission) {
+  // Ask user to grant permissions manually
+  final opened = await speechToText.openSettings();
+}
+```
+
+This is useful when:
+- Permissions have been denied and need to be granted manually
+- On macOS where requesting permissions programmatically can be problematic
+
+**Returns:** `Future<bool>` - `true` if settings were opened successfully
+
+**Platform behavior:**
+- **iOS**: Opens Settings > Privacy > Speech Recognition
+- **macOS**: Opens System Settings > Privacy & Security > Speech Recognition
+- **Android**: Opens the app's settings page
 
 ---
 
@@ -335,6 +384,7 @@ Availability depends on the device and platform. Use `isAvailable()` to check.
 ### "Speech recognition not available"
 
 - **iOS**: Speech recognition requires iOS 10+ and may not work in the simulator. Test on a real device.
+- **macOS**: Speech recognition requires macOS 10.15+. Ensure permissions are granted in System Settings > Privacy & Security.
 - **Android**: Ensure Google app or speech recognition service is installed and up to date.
 
 ---

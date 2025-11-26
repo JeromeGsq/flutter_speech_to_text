@@ -5,6 +5,18 @@ homepage: https://github.com/adelbeke/flutter-speech-to-text
 repository: https://github.com/adelbeke/flutter-speech-to-text
 issue_tracker: https://github.com/adelbeke/flutter-speech-to-text/issues
 
+topics:
+  - speech-recognition
+  - speech-to-text
+  - voice
+  - audio
+
+screenshots:
+  - description: 'Interface principale de transcription'
+    path: documentation/screen1.png
+  - description: 'Dialogue de permissions'
+    path: documentation/screen2.png
+
 environment:
   sdk: ^3.5.0
   flutter: '>=3.24.0'
