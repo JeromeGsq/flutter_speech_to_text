@@ -1,6 +1,6 @@
-name: speech_to_text_native
+name: flutter_speech_to_text
 description: A powerful, easy-to-use Flutter plugin for real-time speech-to-text conversion using native iOS Speech Framework and Android SpeechRecognizer.
-version: 1.0.1
+version: 1.1.0
 homepage: https://github.com/JeromeGsq/flutter_speech_to_text
 repository: https://github.com/JeromeGsq/flutter_speech_to_text
 issue_tracker: https://github.com/JeromeGsq/flutter_speech_to_text/issues
@@ -35,7 +35,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.dbkable.speech_to_text
+        package: com.jeromegsq.speech_to_text
         pluginClass: SpeechToTextPlugin
       ios:
         pluginClass: SpeechToTextPlugin

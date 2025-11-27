@@ -1,6 +1,6 @@
-# speech_to_text_native Example
+# flutter_speech_to_text Example
 
-A demo app showcasing the `speech_to_text_native` Flutter plugin for real-time speech-to-text conversion.
+A demo app showcasing the `flutter_speech_to_text` Flutter plugin for real-time speech-to-text conversion.
 
 ## Getting Started
 
@@ -30,10 +30,10 @@ No additional setup required. The `RECORD_AUDIO` permission is already configure
 
 ## 🙏 Acknowledgments
 
-This example is part of the [speech_to_text_native](https://pub.dev/packages/speech_to_text_native) package, which was vibe coded from [react-native-speech-to-text](https://github.com/adelbeke/react-native-speech-to-text) by Arthur Delbeke. Thanks to his excellent work, this Flutter implementation was made possible!
+This example is part of the [flutter_speech_to_text](https://pub.dev/packages/flutter_speech_to_text) package, which was vibe coded from [react-native-speech-to-text](https://github.com/adelbeke/react-native-speech-to-text) by Arthur Delbeke. Thanks to his excellent work, this Flutter implementation was made possible!
 
 ## More Resources
 
-- [speech_to_text_native on pub.dev](https://pub.dev/packages/speech_to_text_native)
+- [flutter_speech_to_text on pub.dev](https://pub.dev/packages/flutter_speech_to_text)
 - [Flutter Documentation](https://docs.flutter.dev/)
 - [Original React Native Package](https://github.com/adelbeke/react-native-speech-to-text)

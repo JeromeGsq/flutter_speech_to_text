@@ -1,4 +1,4 @@
-package com.dbkable.speech_to_text_example
+package com.jeromegsq.speech_to_text_example
 
 import io.flutter.embedding.android.FlutterActivity
 

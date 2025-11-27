@@ -1,4 +1,4 @@
-package com.dbkable.speech_to_text
+package com.jeromegsq.speech_to_text
 
 import android.Manifest
 import android.app.Activity
@@ -51,13 +51,13 @@ class SpeechToTextPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stream
 
         methodChannel = MethodChannel(
             flutterPluginBinding.binaryMessenger,
-            "com.dbkable.speech_to_text/methods"
+            "com.jeromegsq.speech_to_text/methods"
         )
         methodChannel.setMethodCallHandler(this)
 
         eventChannel = EventChannel(
             flutterPluginBinding.binaryMessenger,
-            "com.dbkable.speech_to_text/events"
+            "com.jeromegsq.speech_to_text/events"
         )
         eventChannel.setStreamHandler(this)
     }

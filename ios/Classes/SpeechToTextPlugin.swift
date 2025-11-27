@@ -16,11 +16,11 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(
-            name: "com.dbkable.speech_to_text/methods",
+            name: "com.jeromegsq.speech_to_text/methods",
             binaryMessenger: registrar.messenger()
         )
         let eventChannel = FlutterEventChannel(
-            name: "com.dbkable.speech_to_text/events",
+            name: "com.jeromegsq.speech_to_text/events",
             binaryMessenger: registrar.messenger()
         )
         

@@ -1,21 +1,21 @@
 PODS:
   - FlutterMacOS (1.0.0)
-  - speech_to_text_native (1.0.0):
+  - flutter_speech_to_text (1.0.0):
     - FlutterMacOS
 
 DEPENDENCIES:
   - FlutterMacOS (from `Flutter/ephemeral`)
-  - speech_to_text_native (from `Flutter/ephemeral/.symlinks/plugins/speech_to_text_native/macos`)
+  - flutter_speech_to_text (from `Flutter/ephemeral/.symlinks/plugins/flutter_speech_to_text/macos`)
 
 EXTERNAL SOURCES:
   FlutterMacOS:
     :path: Flutter/ephemeral
-  speech_to_text_native:
-    :path: Flutter/ephemeral/.symlinks/plugins/speech_to_text_native/macos
+  flutter_speech_to_text:
+    :path: Flutter/ephemeral/.symlinks/plugins/flutter_speech_to_text/macos
 
 SPEC CHECKSUMS:
   FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
-  speech_to_text_native: 05f47c6803b9f5f69aca88d7d4459d0d36d70bcb
+  flutter_speech_to_text: 05f47c6803b9f5f69aca88d7d4459d0d36d70bcb
 
 PODFILE CHECKSUM: 54d867c82ac51cbd61b565781b9fada492027009
 

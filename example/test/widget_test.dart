@@ -1,4 +1,4 @@
-// This is a basic Flutter widget test for the speech_to_text_native example app.
+// This is a basic Flutter widget test for the flutter_speech_to_text example app.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

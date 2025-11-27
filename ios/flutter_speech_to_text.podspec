@@ -1,9 +1,9 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
-# Run `pod lib lint speech_to_text_native.podspec` to validate before publishing.
+# Run `pod lib lint flutter_speech_to_text.podspec` to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'speech_to_text_native'
+  s.name             = 'flutter_speech_to_text'
   s.version          = '1.0.0'
   s.summary          = 'A Flutter plugin for real-time speech-to-text conversion.'
   s.description      = <<-DESC
@@ -22,6 +22,6 @@ A powerful, easy-to-use Flutter plugin for real-time speech-to-text conversion u
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
 
   # Privacy manifest for required permissions
-  s.resource_bundles = {'speech_to_text_native_privacy' => ['Resources/PrivacyInfo.xcprivacy']}
+  s.resource_bundles = {'flutter_speech_to_text_privacy' => ['Resources/PrivacyInfo.xcprivacy']}
 end
 

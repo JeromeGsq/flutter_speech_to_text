@@ -1,6 +1,6 @@
-# speech_to_text_native
+# flutter_speech_to_text
 
-[![pub package](https://img.shields.io/pub/v/speech_to_text_native.svg)](https://pub.dev/packages/speech_to_text_native)
+[![pub package](https://img.shields.io/pub/v/flutter_speech_to_text.svg)](https://pub.dev/packages/flutter_speech_to_text)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/JeromeGsq/flutter_speech_to_text/blob/main/LICENSE)
 
 Speech to text native plugin for Flutter.
@@ -30,7 +30,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  speech_to_text_native: ^1.0.0
+  flutter_speech_to_text: ^1.0.0
 ```
 
 ### iOS Setup
@@ -79,7 +79,7 @@ Add the following to your `macos/Runner/Info.plist`:
 ## 🚀 Quick Start
 
 ```dart
-import 'package:speech_to_text_native/speech_to_text_native.dart';
+import 'package:flutter_speech_to_text/flutter_speech_to_text.dart';
 
 class MyApp extends StatefulWidget {
   @override
@@ -416,6 +416,6 @@ MIT
 ## 🔗 Links
 
 - [GitHub Repository](https://github.com/JeromeGsq/flutter_speech_to_text)
-- [pub.dev Package](https://pub.dev/packages/speech_to_text_native)
+- [pub.dev Package](https://pub.dev/packages/flutter_speech_to_text)
 - [Report Issues](https://github.com/JeromeGsq/flutter_speech_to_text/issues)
 - [Original React Native Package](https://github.com/adelbeke/react-native-speech-to-text)

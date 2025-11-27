@@ -8,7 +8,7 @@
 PRODUCT_NAME = speech_to_text_example
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.dbkable.speechToTextExample
+PRODUCT_BUNDLE_IDENTIFIER = com.jeromegsq.speechToTextExample
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2025 com.dbkable. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2025 com.jeromegsq. All rights reserved.

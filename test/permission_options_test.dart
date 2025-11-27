@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:speech_to_text_native/speech_to_text_native.dart';
+import 'package:flutter_speech_to_text/flutter_speech_to_text.dart';
 
 void main() {
   group('PermissionOptions', () {

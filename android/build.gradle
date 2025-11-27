@@ -1,4 +1,4 @@
-group = "com.dbkable.speech_to_text"
+group = "com.jeromegsq.speech_to_text"
 version = "1.0.0"
 
 buildscript {
@@ -25,7 +25,7 @@ apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
 
 android {
-    namespace = "com.dbkable.speech_to_text"
+    namespace = "com.jeromegsq.speech_to_text"
     compileSdk = 34
 
     compileOptions {

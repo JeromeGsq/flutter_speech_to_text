@@ -2,7 +2,7 @@
 ///
 /// This plugin uses native iOS Speech Framework and Android SpeechRecognizer
 /// for optimal performance and accuracy.
-library speech_to_text_native;
+library;
 
 export 'src/speech_to_text.dart';
 export 'src/speech_result.dart';

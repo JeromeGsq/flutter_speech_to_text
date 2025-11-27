@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2025-11-27
+
+### Changed
+- **BREAKING**: Renamed package from `speech_to_text_native` to `flutter_speech_to_text`
+- Updated library export file from `speech_to_text_native.dart` to `flutter_speech_to_text.dart`
+
+### Migration
+To migrate from `speech_to_text_native` to `flutter_speech_to_text`:
+```dart
+// Before
+import 'package:speech_to_text_native/speech_to_text_native.dart';
+
+// After
+import 'package:flutter_speech_to_text/flutter_speech_to_text.dart';
+```
+
 ## [1.0.1] - 2025-11-26
 
 ### Fixed

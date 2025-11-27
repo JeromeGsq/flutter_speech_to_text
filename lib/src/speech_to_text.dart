@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -42,10 +41,10 @@ import 'permission_options.dart';
 /// ```
 class SpeechToText {
   static const MethodChannel _channel = MethodChannel(
-    'com.dbkable.speech_to_text/methods',
+    'com.jeromegsq.speech_to_text/methods',
   );
   static const EventChannel _eventChannel = EventChannel(
-    'com.dbkable.speech_to_text/events',
+    'com.jeromegsq.speech_to_text/events',
   );
 
   static SpeechToText? _instance;
