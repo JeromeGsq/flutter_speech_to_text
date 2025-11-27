@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2025-11-27
+
+### Changed
+- Updated bundle identifier from `com.dbkable` to `com.jeromegsq`
+- Updated Android package namespace and application ID
+- Updated iOS/macOS bundle identifiers for example app
+
 ## [1.1.0] - 2025-11-27
 
 ### Changed
