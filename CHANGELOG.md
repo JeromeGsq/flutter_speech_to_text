@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.1] - 2025-01-XX
+
+### Fixed
+- Prevent duplicate final speech results in iOS plugin
+- Add hasSentFinalResult flag to track if final result was already sent
+- Improve handling of final transcript in timeout scenario
+
 ## [1.2.0] - 2025-11-27
 
 ### Changed
