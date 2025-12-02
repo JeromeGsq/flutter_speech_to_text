@@ -137,15 +137,17 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
             // Stop any existing recognition before starting a new one
             if audioEngine.isRunning {
                 audioEngine.stop()
+                audioEngine.inputNode.removeTap(onBus: 0)
             }
             
-            // Remove any existing tap before installing a new one
-            let inputNode = audioEngine.inputNode
-            inputNode.removeTap(onBus: 0)
-            
+            // Configure audio session FIRST, before accessing inputNode
             let audioSession = AVAudioSession.sharedInstance()
-            try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
+            try audioSession.setCategory(.playAndRecord, mode: .measurement, options: [.defaultToSpeaker, .allowBluetooth])
             try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+            
+            // Recreate audio engine after audio session is configured
+            // This ensures the inputNode has the correct format
+            audioEngine = AVAudioEngine()
             
             recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
             guard let recognitionRequest = recognitionRequest else {
@@ -156,7 +158,8 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
             recognitionRequest.shouldReportPartialResults = true
             recognitionRequest.taskHint = .dictation // Better for longer speech
             
-            // Get the recording format - use a standard format if the input node format is invalid
+            // Get the input node and its format AFTER audio session is configured
+            let inputNode = audioEngine.inputNode
             let recordingFormat = inputNode.outputFormat(forBus: 0)
             
             // Check if the format is valid (sample rate > 0)
