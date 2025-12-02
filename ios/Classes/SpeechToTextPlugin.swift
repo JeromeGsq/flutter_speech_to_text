@@ -13,6 +13,7 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     private var lastTranscript: String = ""
     private var lastConfidence: Double = 0.0
     private var isManuallyStopped: Bool = false
+    private var hasSentFinalResult: Bool = false
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(
@@ -117,6 +118,7 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
         lastTranscript = ""
         lastConfidence = 0.0
         isManuallyStopped = false
+        hasSentFinalResult = false
         
         guard SFSpeechRecognizer.authorizationStatus() == .authorized else {
             result(FlutterError(code: "PERMISSION_DENIED", message: "Speech recognition not authorized", details: nil))
@@ -177,15 +179,23 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
                     self.lastTranscript = transcript
                     self.lastConfidence = confidence
                     
+                    // Only send if we haven't already sent a final result
+                    if isFinal && self.hasSentFinalResult {
+                        return
+                    }
+                    
                     self.sendEvent(type: "onSpeechResult", data: [
                         "transcript": transcript,
                         "isFinal": isFinal,
                         "confidence": confidence
                     ])
                     
-                    if isFinal && !self.isManuallyStopped {
-                        self.stopRecognition()
-                        self.sendEvent(type: "onSpeechEnd", data: [:])
+                    if isFinal {
+                        self.hasSentFinalResult = true
+                        if !self.isManuallyStopped {
+                            self.stopRecognition()
+                            self.sendEvent(type: "onSpeechEnd", data: [:])
+                        }
                     }
                 }
             }
@@ -215,8 +225,9 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
             guard let self = self else { return }
             
-            // If we still have a transcript but didn't get a final result, send it
-            if !self.lastTranscript.isEmpty {
+            // Only send final result if we haven't already sent one
+            if !self.hasSentFinalResult && !self.lastTranscript.isEmpty {
+                self.hasSentFinalResult = true
                 self.sendEvent(type: "onSpeechResult", data: [
                     "transcript": self.lastTranscript,
                     "isFinal": true,
