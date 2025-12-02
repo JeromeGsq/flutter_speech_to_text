@@ -145,6 +145,7 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
             }
             
             recognitionRequest.shouldReportPartialResults = true
+            recognitionRequest.taskHint = .dictation // Better for longer speech
             
             let inputNode = audioEngine.inputNode
             let recordingFormat = inputNode.outputFormat(forBus: 0)
@@ -179,24 +180,14 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
                     self.lastTranscript = transcript
                     self.lastConfidence = confidence
                     
-                    // Only send if we haven't already sent a final result
-                    if isFinal && self.hasSentFinalResult {
-                        return
-                    }
-                    
+                    // Send result (partial or final)
+                    // Note: We don't auto-stop on isFinal to allow continuous dictation
+                    // The user must manually stop the recording
                     self.sendEvent(type: "onSpeechResult", data: [
                         "transcript": transcript,
-                        "isFinal": isFinal,
+                        "isFinal": false, // Always send as non-final to keep listening
                         "confidence": confidence
                     ])
-                    
-                    if isFinal {
-                        self.hasSentFinalResult = true
-                        if !self.isManuallyStopped {
-                            self.stopRecognition()
-                            self.sendEvent(type: "onSpeechEnd", data: [:])
-                        }
-                    }
                 }
             }
             
