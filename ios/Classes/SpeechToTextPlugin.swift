@@ -134,6 +134,15 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
         }
         
         do {
+            // Stop any existing recognition before starting a new one
+            if audioEngine.isRunning {
+                audioEngine.stop()
+            }
+            
+            // Remove any existing tap before installing a new one
+            let inputNode = audioEngine.inputNode
+            inputNode.removeTap(onBus: 0)
+            
             let audioSession = AVAudioSession.sharedInstance()
             try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
             try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
@@ -147,8 +156,14 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
             recognitionRequest.shouldReportPartialResults = true
             recognitionRequest.taskHint = .dictation // Better for longer speech
             
-            let inputNode = audioEngine.inputNode
+            // Get the recording format - use a standard format if the input node format is invalid
             let recordingFormat = inputNode.outputFormat(forBus: 0)
+            
+            // Check if the format is valid (sample rate > 0)
+            guard recordingFormat.sampleRate > 0 else {
+                result(FlutterError(code: "AUDIO_FORMAT_ERROR", message: "Invalid audio format. Please check microphone permissions.", details: nil))
+                return
+            }
             
             inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
                 recognitionRequest.append(buffer)
