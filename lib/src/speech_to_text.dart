@@ -55,6 +55,8 @@ class SpeechToText {
       StreamController<SpeechError>.broadcast();
   final StreamController<void> _endController =
       StreamController<void>.broadcast();
+  final StreamController<double> _audioLevelController =
+      StreamController<double>.broadcast();
 
   StreamSubscription<dynamic>? _eventSubscription;
   bool _isInitialized = false;
@@ -100,6 +102,15 @@ class SpeechToText {
               debugPrint('[SpeechToText] Emitting end...');
               _endController.add(null);
               break;
+            case 'onAudioLevel':
+              if (data != null) {
+                final level = data['level'] as double?;
+                if (level != null) {
+                  debugPrint('[SpeechToText] Emitting audio level: $level');
+                  _audioLevelController.add(level);
+                }
+              }
+              break;
           }
         }
       },
@@ -129,6 +140,12 @@ class SpeechToText {
 
   /// Stream that emits when speech recognition ends.
   Stream<void> get onEnd => _endController.stream;
+
+  /// Stream of audio level measurements (0.0 to 1.0).
+  ///
+  /// Emits the current audio level from the microphone during speech recognition.
+  /// Values range from 0.0 (silent) to 1.0 (maximum volume).
+  Stream<double> get onAudioLevel => _audioLevelController.stream;
 
   /// Starts speech recognition with the specified language.
   ///
@@ -308,6 +325,7 @@ class SpeechToText {
     _resultController.close();
     _errorController.close();
     _endController.close();
+    _audioLevelController.close();
     _isInitialized = false;
     _instance = null;
   }

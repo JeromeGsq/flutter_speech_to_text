@@ -212,7 +212,13 @@ class SpeechToTextPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stream
                 override fun onBeginningOfSpeech() {
                     Log.i(TAG, "🗣️ onBeginningOfSpeech - User started speaking")
                 }
-                override fun onRmsChanged(rmsdB: Float) {}
+                override fun onRmsChanged(rmsdB: Float) {
+                    // RMS is in dB, typically ranges from 0 to about 10-15
+                    // 0dB = silence, 10dB+ = loud speech
+                    // Normalize to 0.0-1.0 range with sensitivity adjustment
+                    val normalized = (rmsdB / 15.0f).coerceIn(0.0f, 1.0f)
+                    sendEvent("onAudioLevel", mapOf("level" to normalized.toDouble()))
+                }
                 override fun onBufferReceived(buffer: ByteArray?) {}
 
                 override fun onEndOfSpeech() {
@@ -447,7 +453,7 @@ class SpeechToTextPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stream
                 } else {
                     lastTranscript
                 }
-                
+
                 if (finalTranscript.isNotEmpty()) {
                     Log.d(TAG, "│ Sending final result to Flutter: '$finalTranscript'")
                     sendEvent(
@@ -463,6 +469,9 @@ class SpeechToTextPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stream
                 speechRecognizer?.stopListening()
                 speechRecognizer?.destroy()
                 speechRecognizer = null
+
+                Log.d(TAG, "│ Resetting audio level to 0")
+                sendEvent("onAudioLevel", mapOf("level" to 0.0))
 
                 Log.d(TAG, "│ Sending onSpeechEnd event")
                 sendEvent("onSpeechEnd", emptyMap())

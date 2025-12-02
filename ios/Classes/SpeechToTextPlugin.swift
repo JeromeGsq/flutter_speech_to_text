@@ -14,6 +14,8 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     private var lastConfidence: Double = 0.0
     private var isManuallyStopped: Bool = false
     private var hasSentFinalResult: Bool = false
+    private var audioLevelUpdateCounter: Int = 0
+    private let audioLevelUpdateInterval: Int = 1 // Send every buffer (~10ms for faster updates)
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(
@@ -119,6 +121,7 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
         lastConfidence = 0.0
         isManuallyStopped = false
         hasSentFinalResult = false
+        audioLevelUpdateCounter = 0
         
         guard SFSpeechRecognizer.authorizationStatus() == .authorized else {
             result(FlutterError(code: "PERMISSION_DENIED", message: "Speech recognition not authorized", details: nil))
@@ -168,8 +171,16 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
                 return
             }
             
-            inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
+            inputNode.installTap(onBus: 0, bufferSize: 256, format: recordingFormat) { [weak self] buffer, _ in
                 recognitionRequest.append(buffer)
+
+                // Calculate and send audio level
+                self?.audioLevelUpdateCounter += 1
+                if self?.audioLevelUpdateCounter ?? 0 >= self?.audioLevelUpdateInterval ?? 5 {
+                    self?.audioLevelUpdateCounter = 0
+                    let audioLevel = self?.calculateAudioLevel(from: buffer) ?? 0.0
+                    self?.sendEvent(type: "onAudioLevel", data: ["level": audioLevel])
+                }
             }
             
             audioEngine.prepare()
@@ -266,6 +277,24 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
         cleanupRecognition()
     }
     
+    private func calculateAudioLevel(from buffer: AVAudioPCMBuffer) -> Double {
+        guard let channelData = buffer.floatChannelData else { return 0.0 }
+
+        let channelDataValue = channelData.pointee
+        let channelDataValueArray = stride(from: 0,
+                                           to: Int(buffer.frameLength),
+                                           by: buffer.stride).map { channelDataValue[$0] }
+
+        let rms = sqrt(channelDataValueArray.map { $0 * $0 }.reduce(0, +) / Float(channelDataValueArray.count))
+
+        // Convert to dB and normalize to 0.0 - 1.0 range
+        // -80dB is considered silence, 0dB is maximum
+        let db = 20 * log10(max(rms, 0.00001))
+        let normalized = max(0, min(1, (db + 80) / 80)) // Normalize from -80dB to 0dB
+
+        return Double(normalized)
+    }
+
     private func getConfidence(from result: SFSpeechRecognitionResult) -> Double {
         let segments = result.bestTranscription.segments
         guard !segments.isEmpty else {
