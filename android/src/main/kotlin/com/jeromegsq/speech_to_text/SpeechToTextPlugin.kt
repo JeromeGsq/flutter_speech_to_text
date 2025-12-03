@@ -547,7 +547,9 @@ class SpeechToTextPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stream
             "onSpeechError" -> "❌"
             else -> "📨"
         }
-        Log.d(TAG, "$emoji sendEvent → Flutter: type=$type, data=$data")
+        if (type != "onAudioLevel") {
+            Log.d(TAG, "$emoji sendEvent → Flutter: type=$type, data=$data")
+        }
         mainHandler.post {
             val sink = eventSink
             if (sink != null) {

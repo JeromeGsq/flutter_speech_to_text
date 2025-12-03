@@ -106,7 +106,6 @@ class SpeechToText {
               if (data != null) {
                 final level = data['level'] as double?;
                 if (level != null) {
-                  debugPrint('[SpeechToText] Emitting audio level: $level');
                   _audioLevelController.add(level);
                 }
               }
