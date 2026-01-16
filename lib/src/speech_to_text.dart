@@ -78,12 +78,15 @@ class SpeechToText {
 
     _eventSubscription = _eventChannel.receiveBroadcastStream().listen(
       (dynamic event) {
-        debugPrint('[SpeechToText] Received event: $event');
         if (event is Map) {
           final eventType = event['type'] as String?;
           final data = event['data'] as Map?;
 
-          debugPrint('[SpeechToText] Event type: $eventType, data: $data');
+          // Skip logging for onAudioLevel events to reduce noise
+          if (eventType != 'onAudioLevel') {
+            debugPrint('[SpeechToText] Received event: $event');
+            debugPrint('[SpeechToText] Event type: $eventType, data: $data');
+          }
 
           switch (eventType) {
             case 'onSpeechResult':
